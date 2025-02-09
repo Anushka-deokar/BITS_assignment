@@ -1,0 +1,50 @@
+
+let productDiv = document.querySelector(".product");
+var CategoryListDiv = document.querySelector(".CategoryList");
+let allCat = [];
+
+let displayProduct = async (allCheckCat = []) => {
+    console.log(allCheckCat);
+    productDiv.innerHTML = '';
+
+    let product = await fetch('https://fakestoreapi.com/products');
+    let finalproduct = await product.json(); // Total 20 entries
+
+    finalproduct.forEach(element => {
+        if (!allCat.includes(element.category)) {
+            CategoryListDiv.innerHTML += `
+                <label>
+                    <input type="checkbox" onclick='categoryFilter()' value="${element.category}"> ${element.category}
+                </label>`;
+            allCat.push(element.category);
+        }
+
+        if (allCheckCat.length == 0) {
+            allCheckCat = allCat;
+        }
+
+        if (allCheckCat.includes(element.category)) {
+            productDiv.innerHTML += `
+                <div class="productItems">
+                    <img src="${element.image}" alt="">
+                    <h4>${element.category}</h4>
+                    <p>Price: Rs. ${element.price} | ${element.rating.rate}</p>
+                    <h3>${element.title}</h3>
+                </div>`;
+        }
+    });
+};
+
+// Call the function to load products when the page loads
+displayProduct();
+
+let categoryFilter = () => {
+    let checkInput = document.querySelectorAll("input[type='checkbox']");
+    let checkdata = [];
+    checkInput.forEach((e) => {
+        if (e.checked) {
+            checkdata.push(e.value);
+        }
+    });
+    displayProduct(checkdata);
+};
